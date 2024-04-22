@@ -25,3 +25,6 @@ dist-ssr
 
 # Firebase hosting cache
 .firebase
+
+# Production
+.env.production
