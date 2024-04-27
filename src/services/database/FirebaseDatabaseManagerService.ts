@@ -1,12 +1,11 @@
-import { FirebaseApp } from 'firebase/app'
-import { Firestore, addDoc, collection, getDocs, getFirestore } from 'firebase/firestore'
+import { Firestore, addDoc, collection, getDocs } from 'firebase/firestore'
 import { DatabaseManagerService, DesignData } from './DatabaseManagerService'
 
 export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   private firestore: Firestore
-  public constructor(firebaseApp: FirebaseApp) {
+  public constructor(firestore: Firestore) {
     super()
-    this.firestore = getFirestore(firebaseApp)
+    this.firestore = firestore
   }
   public async addDesign(): Promise<void> {
     await addDoc(collection(this.firestore, 'designs'), {
