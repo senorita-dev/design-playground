@@ -1,5 +1,5 @@
 import './App.css'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { ServiceContext } from './services/context'
 import { services } from './services'
@@ -13,6 +13,12 @@ const router = createBrowserRouter([
 ])
 
 function App() {
+  const { databaseService } = services
+  useEffect(() => {
+    return () => {
+      databaseService.dispose()
+    }
+  }, [])
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <ServiceContext.Provider value={services}>

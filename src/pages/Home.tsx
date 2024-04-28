@@ -9,12 +9,14 @@ function Home() {
   const [designs, setDesigns] = useState<DesignData[]>([])
   const { databaseService } = useContext(ServiceContext)
   useEffect(() => {
-    const getDesigns = async () => {
-      const fetchedDesigns = await databaseService.getDesigns()
-      setDesigns(fetchedDesigns)
+    const subscription = databaseService.observeDesigns().subscribe({
+      next: (designs) => setDesigns(designs),
+      error: (error) => console.error(error),
+    })
+    return () => {
+      subscription.unsubscribe()
     }
-    getDesigns()
-  }, [])
+  }, [databaseService])
   return (
     <div>
       <h1>Home</h1>
