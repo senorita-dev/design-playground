@@ -18,7 +18,7 @@ function App() {
     return () => {
       databaseService.dispose()
     }
-  }, [])
+  }, [databaseService])
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <ServiceContext.Provider value={services}>
