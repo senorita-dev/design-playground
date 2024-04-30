@@ -13,10 +13,12 @@ const router = createBrowserRouter([
 ])
 
 function App() {
-  const { databaseService } = services
+  const { databaseService, userService } = services
   useEffect(() => {
+    userService.initialise()
     return () => {
       databaseService.dispose()
+      userService.dispose()
     }
   }, [databaseService])
   return (
