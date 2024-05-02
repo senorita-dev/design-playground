@@ -1,10 +1,15 @@
-import { useContext } from 'react'
+import { User } from 'firebase/auth'
+import React, { useContext } from 'react'
 import { ServiceContext } from 'src/services/context'
 
-const NewDesignButton = () => {
+interface NewDesignButtonProps {
+  user: User
+}
+
+const NewDesignButton: React.FC<NewDesignButtonProps> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
   const handleNewDesign = async () => {
-    databaseService.addDesign()
+    databaseService.addDesign(user)
   }
   return <button onClick={handleNewDesign}>New design</button>
 }

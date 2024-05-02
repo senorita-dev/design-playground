@@ -26,7 +26,9 @@ const SignedOutContent = () => {
     <div>
       <h1>Home</h1>
       <h2>Designs</h2>
-      <p>Log in to see your designs</p>
+      <p>
+        <Link to={'/login'}>Log in</Link> to see your designs
+      </p>
     </div>
   )
 }
@@ -35,7 +37,7 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
   const [designs, setDesigns] = useState<DesignData[]>([])
   useEffect(() => {
-    const subscription = databaseService.observeDesigns().subscribe({
+    const subscription = databaseService.observeDesigns(user).subscribe({
       next: (designs) => setDesigns(designs),
       error: (error) => console.error(error),
     })
@@ -46,9 +48,9 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   return (
     <div>
       <h1>Home</h1>
-      <h2>Welcome {user.displayName ?? 'user'}</h2>
+      <h2>Welcome, {user.displayName ?? 'user'}</h2>
       <h2>
-        Designs <NewDesignButton />
+        Designs <NewDesignButton user={user} />
       </h2>
       <ul>
         {designs.map((design, index) => (

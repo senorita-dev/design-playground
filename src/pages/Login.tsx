@@ -1,5 +1,6 @@
 import { User } from 'firebase/auth'
 import { useContext, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ServiceContext } from 'src/services/context'
 
 function Login() {
@@ -20,6 +21,7 @@ function Login() {
   if (user === null) {
     return (
       <div>
+        <Link to={'/'}>{'<'}Back</Link>
         <h1>Welcome, please log in</h1>
         <button onClick={handleLogin}>Login</button>
       </div>
@@ -27,6 +29,7 @@ function Login() {
   }
   return (
     <div>
+      <Link to={'/'}>{'<'}Back</Link>
       <h1>Welcome, {user.displayName}</h1>
       <button onClick={handleLogout}>Logout</button>
     </div>
