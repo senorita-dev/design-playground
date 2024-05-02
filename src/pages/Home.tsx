@@ -1,13 +1,39 @@
 import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { User } from 'firebase/auth'
 import 'src/css/Home.css'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
 import NewDesignButton from 'src/components/NewDesignButton'
 
 function Home() {
-  const [designs, setDesigns] = useState<DesignData[]>([])
+  const [user, setUser] = useState<User | null>(null)
+  const { userService } = useContext(ServiceContext)
+  useEffect(() => {
+    const subscription = userService.observeUser().subscribe((newUser) => setUser(newUser))
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [userService])
+  if (user === null) {
+    return <SignedOutContent />
+  }
+  return <SignedInContent user={user} />
+}
+
+const SignedOutContent = () => {
+  return (
+    <div>
+      <h1>Home</h1>
+      <h2>Designs</h2>
+      <p>Log in to see your designs</p>
+    </div>
+  )
+}
+
+const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
+  const [designs, setDesigns] = useState<DesignData[]>([])
   useEffect(() => {
     const subscription = databaseService.observeDesigns().subscribe({
       next: (designs) => setDesigns(designs),
@@ -20,6 +46,7 @@ function Home() {
   return (
     <div>
       <h1>Home</h1>
+      <h2>Welcome {user.displayName ?? 'user'}</h2>
       <h2>
         Designs <NewDesignButton />
       </h2>
