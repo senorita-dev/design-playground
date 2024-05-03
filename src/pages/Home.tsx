@@ -53,18 +53,14 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
         Designs <NewDesignButton user={user} />
       </h2>
       <ul>
-        {designs.map((design, index) => (
-          <li key={index}>{design.id}</li>
-        ))}
-      </ul>
-      <ul>
-        <li>
-          <Link to="/design">Design 1</Link>
-        </li>
-        <li>Design 2</li>
-        <li>Design 3</li>
-        <li>Design 4</li>
-        <li>Design 5</li>
+        {designs.map((design, index) => {
+          const path = `/design/${design.id}`
+          return (
+            <li key={index}>
+              <Link to={path}>{design.id}</Link>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
