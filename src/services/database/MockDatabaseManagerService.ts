@@ -14,4 +14,7 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
   public observeDesigns(): Observable<DesignData[]> {
     throw new Error('Method not implemented.')
   }
+  public getDesign(): Promise<DesignData> {
+    throw new Error('Method not implemented.')
+  }
 }

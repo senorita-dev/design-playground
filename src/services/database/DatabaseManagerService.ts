@@ -6,6 +6,7 @@ export abstract class DatabaseManagerService {
   public abstract addDesign(user: User): Promise<void>
   public abstract getDesigns(user: User): Promise<DesignData[]>
   public abstract observeDesigns(user: User): Observable<DesignData[]>
+  public abstract getDesign(user: User, designId: string): Promise<DesignData>
 }
 
 export interface DesignData {
