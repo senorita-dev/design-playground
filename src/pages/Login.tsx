@@ -1,10 +1,9 @@
-import { User } from 'firebase/auth'
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { ServiceContext } from 'src/services/context'
+import { useObservable } from 'src/utils/hooks'
 
 function Login() {
-  const [user, setUser] = useState<User | null>(null)
   const { userService } = useContext(ServiceContext)
   async function handleLogin() {
     await userService.login()
@@ -12,13 +11,8 @@ function Login() {
   function handleLogout() {
     userService.logout()
   }
-  useEffect(() => {
-    const subscription = userService.observeUser().subscribe((newUser) => setUser(newUser))
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [userService])
-  if (user === null) {
+  const user = useObservable(userService.observeUser())
+  if (user === null || user === undefined) {
     return (
       <div>
         <Link to={'/'}>{'<'}Back</Link>

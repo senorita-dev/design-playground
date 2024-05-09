@@ -3,17 +3,12 @@ import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
+import { useObservable } from 'src/utils/hooks'
 
 function Design() {
-  const [user, setUser] = useState<User | null>(null)
   const { userService } = useContext(ServiceContext)
-  useEffect(() => {
-    const subscription = userService.observeUser().subscribe((newUser) => setUser(newUser))
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [userService])
-  if (user === null) {
+  const user = useObservable(userService.observeUser())
+  if (user === null || user === undefined) {
     return <SignedOutContent />
   }
   return <SignedInContent user={user} />

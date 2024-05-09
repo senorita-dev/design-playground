@@ -5,17 +5,12 @@ import 'src/css/Home.css'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
 import NewDesignButton from 'src/components/NewDesignButton'
+import { useObservable } from 'src/utils/hooks'
 
 function Home() {
-  const [user, setUser] = useState<User | null>(null)
   const { userService } = useContext(ServiceContext)
-  useEffect(() => {
-    const subscription = userService.observeUser().subscribe((newUser) => setUser(newUser))
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [userService])
-  if (user === null) {
+  const user = useObservable(userService.observeUser())
+  if (user === null || user === undefined) {
     return <SignedOutContent />
   }
   return <SignedInContent user={user} />
