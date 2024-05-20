@@ -1,9 +1,11 @@
 import { User } from 'firebase/auth'
 import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import Grid from 'src/components/Grid'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
 import { useObservable } from 'src/utils/hooks'
+import styled from 'styled-components'
 
 function Design() {
   const { userService } = useContext(ServiceContext)
@@ -16,11 +18,13 @@ function Design() {
 
 const SignedOutContent = () => {
   return (
-    <div>
+    <Container>
       <Link to={'/'}>{'<'}Back</Link>
       <h1>Design</h1>
-      <p><Link to={'/login'}>Log in</Link> to see your designs</p>
-    </div>
+      <p>
+        <Link to={'/login'}>Log in</Link> to see your designs
+      </p>
+    </Container>
   )
 }
 
@@ -37,14 +41,17 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
       setDesign(fetchedDesign)
     }
   }, [databaseService, designId, user])
+  console.log('design', design)
   return (
-    <div>
-      <Link to={'/'}>{'<'}Back</Link>
-      <h1>Design</h1>
-      <p>Design data:</p>
-      <p>{design?.id}</p>
-    </div>
+    <Container>
+      <Grid />
+    </Container>
   )
 }
+
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+`
 
 export default Design
