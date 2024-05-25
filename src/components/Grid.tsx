@@ -16,6 +16,7 @@ function Grid() {
     const { width, height } = canvasElement.getBoundingClientRect()
     setDimensions({ width, height })
   })
+  const scaling = window.devicePixelRatio || 1;
   useEffect(() => {
     if (canvasRef.current) {
       resizeObserver.observe(canvasRef.current)
@@ -32,9 +33,11 @@ function Grid() {
       return
     }
     drawGrid(ctx)
-  }, [canvasRef.current, dimensions])
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.scale(scaling, scaling)
+  }, [canvasRef.current, dimensions, scaling])
   const { width, height } = dimensions
-  return <Canvas ref={canvasRef} width={width} height={height} />
+  return <Canvas ref={canvasRef} width={width * scaling} height={height * scaling} />
 }
 
 const Canvas = styled.canvas`
@@ -44,7 +47,7 @@ const Canvas = styled.canvas`
 `
 
 function drawGrid(ctx: CanvasRenderingContext2D) {
-  const size = 50 // Adjust this value to change the size of the grid cells
+  const size = 50
   const width = ctx.canvas.width
   const height = ctx.canvas.height
 
@@ -60,11 +63,9 @@ function drawGrid(ctx: CanvasRenderingContext2D) {
       ctx.lineTo(width, y)
     }
   }
-  ctx.strokeStyle = 'rgba(0,0,0,0.5)' // Grid line color
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)'
   ctx.lineWidth = 0.5
   ctx.stroke()
-
-  console.log('draw grid')
 }
 
 export default Grid
