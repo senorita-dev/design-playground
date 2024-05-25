@@ -28,8 +28,8 @@ interface BaseDesignObject {
   y: number
 }
 
-interface Rectangle extends BaseDesignObject {
+interface RectangleObject extends BaseDesignObject {
   type: 'rectangle'
 }
 
-export type DesignObject = Rectangle
+export type DesignObject = RectangleObject
