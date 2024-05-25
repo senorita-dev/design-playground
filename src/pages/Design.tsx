@@ -60,9 +60,10 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
         break
     }
   }
+  const designObjects = design?.objects ?? []
   return (
     <Container>
-      <Grid />
+      <Grid designObjects={designObjects} />
     </Container>
   )
 }
