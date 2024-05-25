@@ -1,13 +1,43 @@
-import { DesignObject } from 'src/services/database/DatabaseManagerService'
+import { DesignData, DesignObject } from 'src/services/database/DatabaseManagerService'
 import GridBackground from './GridBackground'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
+import { useContext, useEffect } from 'react'
+import { ServiceContext } from 'src/services/context'
+import { User } from 'firebase/auth'
 
 interface GridProps {
-  designObjects: DesignObject[]
+  user: User
+  design: DesignData | null
 }
 
-const Grid: React.FC<GridProps> = ({ designObjects }) => {
+const Grid: React.FC<GridProps> = ({ user, design }) => {
+  const { databaseService } = useContext(ServiceContext)
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [])
+  async function handleKeydown(this: Window, event: KeyboardEvent) {
+    if (event.repeat) {
+      return null
+    }
+    if (design?.id === undefined) {
+      return null
+    }
+    switch (event.code) {
+      case 'KeyR':
+        const designObject: DesignObject = {
+          type: 'rectangle',
+          x: 100,
+          y: 100,
+        }
+        await databaseService.createDesignObject(user, design.id, designObject)
+        break
+      default:
+        break
+    }
+  }
+  const designObjects = design?.objects ?? []
   return (
     <Container>
       <GridBackground />
