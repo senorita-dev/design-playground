@@ -19,7 +19,7 @@ export interface DesignData {
   objects: DesignObject[]
 }
 
-type DesignObjectType = 'rectangle'
+export type DesignObjectType = 'rectangle'
 
 interface BaseDesignObject {
   type: DesignObjectType
