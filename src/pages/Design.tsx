@@ -41,7 +41,25 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
       setDesign(fetchedDesign)
     }
   }, [databaseService, designId, user])
-  console.log('design', design)
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [])
+  async function handleKeydown(this: Window, event: KeyboardEvent) {
+    if (event.repeat) {
+      return null
+    }
+    if (designId === undefined) {
+      return null
+    }
+    switch (event.code) {
+      case 'KeyR':
+        await databaseService.createDesignObject(user, designId, 'rectangle')
+        break
+      default:
+        break
+    }
+  }
   return (
     <Container>
       <Grid />

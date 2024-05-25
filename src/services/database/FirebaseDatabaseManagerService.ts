@@ -66,11 +66,24 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     return designData
   }
 
+  public async createDesignObject(
+    user: User,
+    designId: string,
+    designObjectType: 'rectangle',
+  ): Promise<void> {
+    const objectsCollectionReference = this.getObjectsCollectionReference(user, designId)
+    await addDoc(objectsCollectionReference, { type: designObjectType })
+  }
+
   private getDesignsCollectionReference(user: User) {
     return collection(this.firestore, 'users', user.uid, 'designs')
   }
 
   private getDesignDocReference(user: User, designId: string) {
     return doc(this.firestore, 'users', user.uid, 'designs', designId)
+  }
+
+  private getObjectsCollectionReference(user: User, designId: string) {
+    return collection(this.firestore, 'users', user.uid, 'designs', designId, 'objects')
   }
 }
