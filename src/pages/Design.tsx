@@ -41,9 +41,10 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
       setDesign(fetchedDesign)
     }
   }, [databaseService, designId, user])
+  console.log('design', design)
   return (
     <Container>
-      <Grid user={user} design={design} />
+      <Grid user={user} designId={designId} />
     </Container>
   )
 }

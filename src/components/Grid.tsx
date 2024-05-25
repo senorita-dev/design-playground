@@ -1,4 +1,4 @@
-import { DesignData, DesignObject } from 'src/services/database/DatabaseManagerService'
+import { DesignObject } from 'src/services/database/DatabaseManagerService'
 import GridBackground from './GridBackground'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
@@ -8,7 +8,7 @@ import { User } from 'firebase/auth'
 
 interface GridProps {
   user: User
-  design: DesignData | null
+  designId?: string
 }
 
 interface Position {
@@ -16,10 +16,21 @@ interface Position {
   y: number
 }
 
-const Grid: React.FC<GridProps> = ({ user, design }) => {
+const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const gridRef = useRef<HTMLDivElement>(null)
+  const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
   const { databaseService } = useContext(ServiceContext)
+  useEffect(() => {
+    if (designId === undefined) {
+      return
+    }
+    const subscription = databaseService.observeDesignObjects(user, designId).subscribe({
+      next: (designObjects) => setDesignObjects(designObjects),
+      error: (error) => console.error(error),
+    })
+    return () => subscription.unsubscribe()
+  }, [databaseService, designId])
   useEffect(() => {
     const grid = gridRef.current
     if (grid === null) {
@@ -41,7 +52,7 @@ const Grid: React.FC<GridProps> = ({ user, design }) => {
     if (event.repeat) {
       return null
     }
-    if (design?.id === undefined) {
+    if (designId === undefined) {
       return null
     }
     if (event.ctrlKey) {
@@ -51,7 +62,7 @@ const Grid: React.FC<GridProps> = ({ user, design }) => {
       case 'KeyR':
         const { x, y } = cursorPosition
         const designObject: DesignObject = { type: 'rectangle', x, y }
-        await databaseService.createDesignObject(user, design.id, designObject)
+        await databaseService.createDesignObject(user, designId, designObject)
         break
       default:
         break
@@ -60,7 +71,6 @@ const Grid: React.FC<GridProps> = ({ user, design }) => {
   function handleMouseMove(event: MouseEvent) {
     setCursorPosition({ x: event.clientX, y: event.clientY })
   }
-  const designObjects = design?.objects ?? []
   return (
     <Container ref={gridRef} tabIndex={0}>
       <GridBackground />
