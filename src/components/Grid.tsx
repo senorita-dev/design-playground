@@ -2,7 +2,7 @@ import { DesignData, DesignObject } from 'src/services/database/DatabaseManagerS
 import GridBackground from './GridBackground'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ServiceContext } from 'src/services/context'
 import { User } from 'firebase/auth'
 
@@ -11,13 +11,33 @@ interface GridProps {
   design: DesignData | null
 }
 
+interface Position {
+  x: number
+  y: number
+}
+
 const Grid: React.FC<GridProps> = ({ user, design }) => {
+  const gridRef = useRef<HTMLDivElement>(null)
+  const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
   const { databaseService } = useContext(ServiceContext)
   useEffect(() => {
-    window.addEventListener('keydown', handleKeydown)
-    return () => window.removeEventListener('keydown', handleKeydown)
-  }, [])
-  async function handleKeydown(this: Window, event: KeyboardEvent) {
+    const grid = gridRef.current
+    if (grid === null) {
+      return
+    }
+    grid.focus()
+    grid.addEventListener('mousemove', handleMouseMove)
+    return () => grid.removeEventListener('mousemove', handleMouseMove)
+  }, [gridRef.current])
+  useEffect(() => {
+    const grid = gridRef.current
+    if (grid === null) {
+      return
+    }
+    grid.addEventListener('keydown', handleKeydown)
+    return () => grid.removeEventListener('keydown', handleKeydown)
+  }, [gridRef.current, cursorPosition])
+  async function handleKeydown(event: KeyboardEvent) {
     if (event.repeat) {
       return null
     }
@@ -26,20 +46,20 @@ const Grid: React.FC<GridProps> = ({ user, design }) => {
     }
     switch (event.code) {
       case 'KeyR':
-        const designObject: DesignObject = {
-          type: 'rectangle',
-          x: 100,
-          y: 100,
-        }
+        const { x, y } = cursorPosition
+        const designObject: DesignObject = { type: 'rectangle', x, y }
         await databaseService.createDesignObject(user, design.id, designObject)
         break
       default:
         break
     }
   }
+  function handleMouseMove(event: MouseEvent) {
+    setCursorPosition({ x: event.clientX, y: event.clientY })
+  }
   const designObjects = design?.objects ?? []
   return (
-    <Container>
+    <Container ref={gridRef} tabIndex={0}>
       <GridBackground />
       <ObjectContainer>
         {designObjects.map((designObject, index) => {
