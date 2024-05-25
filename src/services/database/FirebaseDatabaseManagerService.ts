@@ -8,7 +8,7 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore'
-import { DatabaseManagerService, DesignData } from './DatabaseManagerService'
+import { DatabaseManagerService, DesignData, DesignObject } from './DatabaseManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
 
@@ -36,7 +36,11 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designsCollection = this.getDesignsCollectionReference(user)
     const designDocs = await getDocs(designsCollection)
     const designs: DesignData[] = []
-    designDocs.forEach((designDoc) => designs.push({ id: designDoc.id }))
+    designDocs.forEach((designDoc) => {
+      console.log('designDoc', designDoc.data())
+      const designData: DesignData = { id: designDoc.id, objects: [] }
+      designs.push(designData)
+    })
     return designs
   }
 
@@ -49,7 +53,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       designsCollectionReference,
       (snapshot) => {
         const docs = snapshot.docs
-        const designs: DesignData[] = docs.map((doc) => ({ id: doc.id }))
+        const designs: DesignData[] = docs.map((doc) => ({ id: doc.id, objects: [] }))
         this.designsSubject.next(designs)
       },
       (error) => {
@@ -62,7 +66,14 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   public async getDesign(user: User, designId: string): Promise<DesignData> {
     const designDocReference = this.getDesignDocReference(user, designId)
     const designDoc = await getDoc(designDocReference)
-    const designData: DesignData = { id: designDoc.id }
+    const objectsCollectionReference = this.getObjectsCollectionReference(user, designId)
+    const objectDocs = await getDocs(objectsCollectionReference)
+    const designObjects: DesignObject[] = []
+    objectDocs.forEach((objectDoc) => {
+      const designObject = objectDoc.data() as DesignObject
+      designObjects.push(designObject)
+    })
+    const designData: DesignData = { id: designDoc.id, objects: designObjects }
     return designData
   }
 
