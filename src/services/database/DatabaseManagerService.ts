@@ -12,6 +12,7 @@ export abstract class DatabaseManagerService {
     designId: string,
     designObject: DesignObject,
   ): Promise<void>
+  public abstract observeDesignObjects(user: User, designId: string): Observable<DesignObject[]>
 }
 
 export interface DesignData {

@@ -16,15 +16,19 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   private firestore: Firestore
   private designsSubscription?: Unsubscribe
   private designsSubject: BehaviorSubject<DesignData[]>
+  private designObjectsSubscription?: Unsubscribe
+  private designObjectsSubject: BehaviorSubject<DesignObject[]>
 
   public constructor(firestore: Firestore) {
     super()
     this.firestore = firestore
     this.designsSubject = new BehaviorSubject<DesignData[]>([])
+    this.designObjectsSubject = new BehaviorSubject<DesignObject[]>([])
   }
 
   public dispose(): void {
     this.designsSubscription?.()
+    this.designObjectsSubscription?.()
   }
 
   public async addDesign(user: User): Promise<void> {
@@ -84,6 +88,20 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   ): Promise<void> {
     const objectsCollectionReference = this.getObjectsCollectionReference(user, designId)
     await addDoc(objectsCollectionReference, designObject)
+  }
+
+  public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {
+    this.designObjectsSubscription?.()
+    const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
+    this.designsSubscription = onSnapshot(
+      designObjectsCollectionReference,
+      (snapshot) => {
+        const docs = snapshot.docs
+        const designObjects: DesignObject[] = docs.map((doc) => doc.data() as DesignObject)
+        this.designObjectsSubject.next(designObjects)
+      },
+    )
+    return this.designObjectsSubject
   }
 
   private getDesignsCollectionReference(user: User) {
