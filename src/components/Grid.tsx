@@ -44,6 +44,9 @@ const Grid: React.FC<GridProps> = ({ user, design }) => {
     if (design?.id === undefined) {
       return null
     }
+    if (event.ctrlKey) {
+      return null
+    }
     switch (event.code) {
       case 'KeyR':
         const { x, y } = cursorPosition
