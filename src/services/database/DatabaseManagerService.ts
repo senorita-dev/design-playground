@@ -10,7 +10,7 @@ export abstract class DatabaseManagerService {
   public abstract createDesignObject(
     user: User,
     designId: string,
-    designObjectType: DesignObjectType,
+    designObject: DesignObject,
   ): Promise<void>
 }
 
@@ -19,10 +19,12 @@ export interface DesignData {
   objects: DesignObject[]
 }
 
-export type DesignObjectType = 'rectangle'
+type DesignObjectType = 'rectangle'
 
 interface BaseDesignObject {
   type: DesignObjectType
+  x: number
+  y: number
 }
 
 interface Rectangle extends BaseDesignObject {

@@ -8,12 +8,7 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore'
-import {
-  DatabaseManagerService,
-  DesignData,
-  DesignObject,
-  DesignObjectType,
-} from './DatabaseManagerService'
+import { DatabaseManagerService, DesignData, DesignObject } from './DatabaseManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
 
@@ -85,10 +80,10 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   public async createDesignObject(
     user: User,
     designId: string,
-    designObjectType: DesignObjectType,
+    designObject: DesignObject,
   ): Promise<void> {
     const objectsCollectionReference = this.getObjectsCollectionReference(user, designId)
-    await addDoc(objectsCollectionReference, { type: designObjectType })
+    await addDoc(objectsCollectionReference, designObject)
   }
 
   private getDesignsCollectionReference(user: User) {
