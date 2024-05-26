@@ -21,6 +21,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
   const { databaseService } = useContext(ServiceContext)
+  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null)
   useEffect(() => {
     if (designId === undefined) {
       return
@@ -38,7 +39,11 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     }
     grid.focus()
     grid.addEventListener('mousemove', handleMouseMove)
-    return () => grid.removeEventListener('mousemove', handleMouseMove)
+    grid.addEventListener('click', handleMouseClick)
+    return () => {
+      grid.removeEventListener('mousemove', handleMouseMove)
+      grid.removeEventListener('click', handleMouseClick)
+    }
   }, [gridRef.current])
   useEffect(() => {
     const grid = gridRef.current
@@ -71,13 +76,26 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   function handleMouseMove(event: MouseEvent) {
     setCursorPosition({ x: event.clientX, y: event.clientY })
   }
+  function handleMouseClick(event: MouseEvent) {
+    const target = event.target
+    if (target === null || target === gridRef.current) {
+      setSelectedDesignId(null)
+      return
+    }
+    if (!(target instanceof HTMLElement)) {
+      return
+    }
+    const id = target.dataset.id ?? null
+    setSelectedDesignId(id)
+  }
   return (
     <Container ref={gridRef} tabIndex={0}>
       {designObjects.map((designObject, index) => {
         const { x, y } = designObject
         switch (designObject.type) {
           case 'rectangle':
-            return <Rectangle key={index} x={x} y={y} />
+            const id = index.toString()
+            return <Rectangle key={index} x={x} y={y} id={id} selected={selectedDesignId === id} />
           default:
             assertNever(designObject.type)
         }
