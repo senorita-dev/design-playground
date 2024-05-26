@@ -16,6 +16,7 @@ const UiRectangle = styled.div<RectangleProps>`
   width: 200px;
   height: 100px;
   background-color: var(--off-white);
+  border: 1px solid black;
 `
 
 export default Rectangle
