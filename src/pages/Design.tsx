@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
 import { ServiceContext } from 'src/services/context'
-import { DesignData } from 'src/services/database/DatabaseManagerService'
+import { DesignData } from 'src/services/design/DesignManagerService'
 import { useObservable } from 'src/utils/hooks'
 import styled from 'styled-components'
 

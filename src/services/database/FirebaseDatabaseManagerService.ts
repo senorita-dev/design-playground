@@ -8,7 +8,8 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore'
-import { DatabaseManagerService, DesignData, DesignObject } from './DatabaseManagerService'
+import { DatabaseManagerService } from './DatabaseManagerService'
+import { DesignData, DesignObject } from '../design/DesignManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
 
@@ -93,14 +94,11 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {
     this.designObjectsSubscription?.()
     const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
-    this.designsSubscription = onSnapshot(
-      designObjectsCollectionReference,
-      (snapshot) => {
-        const docs = snapshot.docs
-        const designObjects: DesignObject[] = docs.map((doc) => doc.data() as DesignObject)
-        this.designObjectsSubject.next(designObjects)
-      },
-    )
+    this.designsSubscription = onSnapshot(designObjectsCollectionReference, (snapshot) => {
+      const docs = snapshot.docs
+      const designObjects: DesignObject[] = docs.map((doc) => doc.data() as DesignObject)
+      this.designObjectsSubject.next(designObjects)
+    })
     return this.designObjectsSubject
   }
 

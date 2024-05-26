@@ -1,4 +1,4 @@
-import { DesignObject } from 'src/services/database/DatabaseManagerService'
+import { DesignObject } from 'src/services/design/DesignManagerService'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
 import { useContext, useEffect, useRef, useState } from 'react'

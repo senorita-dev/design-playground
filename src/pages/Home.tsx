@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { User } from 'firebase/auth'
 import 'src/css/Home.css'
 import { ServiceContext } from 'src/services/context'
-import { DesignData } from 'src/services/database/DatabaseManagerService'
+import { DesignData } from 'src/services/design/DesignManagerService'
 import NewDesignButton from 'src/components/NewDesignButton'
 import { useObservable } from 'src/utils/hooks'
 
