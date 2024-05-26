@@ -1,5 +1,4 @@
-export abstract class AbstractDesignManagerService {
-}
+export abstract class DesignManagerService {}
 
 export interface DesignData {
   id: string
