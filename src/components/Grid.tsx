@@ -1,5 +1,4 @@
 import { DesignObject } from 'src/services/database/DatabaseManagerService'
-import GridBackground from './GridBackground'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -74,18 +73,15 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   }
   return (
     <Container ref={gridRef} tabIndex={0}>
-      <GridBackground />
-      <ObjectContainer>
-        {designObjects.map((designObject, index) => {
-          const { x, y } = designObject
-          switch (designObject.type) {
-            case 'rectangle':
-              return <Rectangle key={index} x={x} y={y} />
-            default:
-              assertNever(designObject.type)
-          }
-        })}
-      </ObjectContainer>
+      {designObjects.map((designObject, index) => {
+        const { x, y } = designObject
+        switch (designObject.type) {
+          case 'rectangle':
+            return <Rectangle key={index} x={x} y={y} />
+          default:
+            assertNever(designObject.type)
+        }
+      })}
     </Container>
   )
 }
@@ -93,9 +89,6 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
 const Container = styled.div`
   width: 100%;
   height: 100%;
-`
-
-const ObjectContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;

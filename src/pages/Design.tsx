@@ -2,6 +2,7 @@ import { User } from 'firebase/auth'
 import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
+import GridBackground from 'src/components/GridBackground'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
 import { useObservable } from 'src/utils/hooks'
@@ -44,6 +45,7 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   console.log('design', design)
   return (
     <Container>
+      <GridBackground />
       <Grid user={user} designId={designId} />
     </Container>
   )
