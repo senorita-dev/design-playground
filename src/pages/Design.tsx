@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
+import RightBanner from 'src/components/RightBanner'
 import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/design/DesignManagerService'
 import { useObservable } from 'src/utils/hooks'
@@ -47,6 +48,7 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
     <Container>
       <GridBackground />
       <Grid user={user} designId={designId} />
+      <RightBanner />
     </Container>
   )
 }
