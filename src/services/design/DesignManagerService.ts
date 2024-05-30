@@ -1,4 +1,10 @@
-export abstract class DesignManagerService {}
+import { Observable } from "rxjs"
+
+export abstract class DesignManagerService {
+  public abstract setCurrentObject(designObject: DesignObject): void
+  public abstract clearCurrentObject(): void
+  public abstract observeCurrentObject(): Observable<DesignObject | null>
+}
 
 export interface DesignData {
   id: string
