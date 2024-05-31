@@ -20,7 +20,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const gridRef = useRef<HTMLDivElement>(null)
   const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
-  const { databaseService } = useContext(ServiceContext)
+  const { databaseService, designService } = useContext(ServiceContext)
   const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null)
   useEffect(() => {
     if (designId === undefined) {
@@ -45,6 +45,18 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       grid.removeEventListener('click', handleMouseClick)
     }
   }, [gridRef.current])
+  useEffect(() => {
+    if (selectedDesignId === null) {
+      designService.clearCurrentObject()
+      return
+    }
+    const designObject = designObjects.at(parseInt(selectedDesignId))
+    if (designObject === undefined) {
+      designService.clearCurrentObject()
+      return
+    }
+    designService.setCurrentObject(designObject)
+  }, [selectedDesignId, designObjects])
   useEffect(() => {
     const grid = gridRef.current
     if (grid === null) {
