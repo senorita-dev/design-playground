@@ -52,6 +52,14 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       }
       databaseService.setSelectedDesignObject(id)
     }
+    function handleMouseDrag(event: MouseEvent) {
+      if (selectedObject === null || selectedObject === undefined || designId === undefined) {
+        return
+      }
+      const { clientX, clientY } = event
+      const updatedDesignObject: DesignObject = { ...selectedObject, x: clientX, y: clientY }
+      databaseService.editDesignObject(user, designId, updatedDesignObject)
+    }
     const grid = gridRef.current
     if (grid === null) {
       return
@@ -59,11 +67,13 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     grid.focus()
     grid.addEventListener('mousemove', handleMouseMove)
     grid.addEventListener('click', handleMouseClick)
+    grid.addEventListener('dragend', handleMouseDrag)
     return () => {
       grid.removeEventListener('mousemove', handleMouseMove)
       grid.removeEventListener('click', handleMouseClick)
+      grid.removeEventListener('dragend', handleMouseDrag)
     }
-  }, [databaseService, gridRef])
+  }, [databaseService, user, gridRef, designId, selectedObject])
   useEffect(() => {
     async function handleKeydown(event: KeyboardEvent) {
       if (event.repeat) {
@@ -103,7 +113,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   return (
     <Container ref={gridRef} tabIndex={0}>
       {designObjects.map((designObject) => {
-        const { id, x, y  } = designObject
+        const { id, x, y } = designObject
         switch (designObject.type) {
           case 'rectangle':
             return <Rectangle key={id} x={x} y={y} id={id} selected={selectedObject?.id === id} />
