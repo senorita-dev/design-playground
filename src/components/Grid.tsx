@@ -37,7 +37,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     function handleMouseMove(event: MouseEvent) {
       setCursorPosition({ x: event.clientX, y: event.clientY })
     }
-    function handleMouseClick(event: MouseEvent) {
+    function handleMouseDown(event: MouseEvent) {
       const target = event.target
       if (target === null || target === gridRef.current) {
         databaseService.clearSelectedDesignObject()
@@ -68,11 +68,11 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     }
     grid.focus()
     grid.addEventListener('mousemove', handleMouseMove)
-    grid.addEventListener('mousedown', handleMouseClick)
+    grid.addEventListener('mousedown', handleMouseDown)
     grid.addEventListener('dragend', handleMouseDrag)
     return () => {
       grid.removeEventListener('mousemove', handleMouseMove)
-      grid.removeEventListener('mousedown', handleMouseClick)
+      grid.removeEventListener('mousedown', handleMouseDown)
       grid.removeEventListener('dragend', handleMouseDrag)
     }
   }, [databaseService, user, gridRef, designId, selectedObject])
