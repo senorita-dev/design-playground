@@ -50,7 +50,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       designService.clearCurrentObject()
       return
     }
-    const designObject = designObjects.at(parseInt(selectedDesignId))
+    const designObject = designObjects.find(({id}) => id === selectedDesignId)
     if (designObject === undefined) {
       designService.clearCurrentObject()
       return
@@ -102,12 +102,11 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   }
   return (
     <Container ref={gridRef} tabIndex={0}>
-      {designObjects.map((designObject, index) => {
-        const { x, y } = designObject
+      {designObjects.map((designObject) => {
+        const { id, x, y  } = designObject
         switch (designObject.type) {
           case 'rectangle':
-            const id = index.toString()
-            return <Rectangle key={index} x={x} y={y} id={id} selected={selectedDesignId === id} />
+            return <Rectangle key={id} x={x} y={y} id={id} selected={selectedDesignId === id} />
           default:
             assertNever(designObject.type)
         }
