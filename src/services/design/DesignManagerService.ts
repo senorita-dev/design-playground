@@ -6,14 +6,10 @@ export abstract class DesignManagerService {
   public abstract observeCurrentObject(): Observable<DesignObject | null>
 }
 
-export interface DesignData {
-  id: string
-  objects: DesignObject[]
-}
-
 type DesignObjectType = 'rectangle'
 
 interface BaseDesignObject {
+  id: string
   type: DesignObjectType
   x: number
   y: number
@@ -24,3 +20,5 @@ interface RectangleObject extends BaseDesignObject {
 }
 
 export type DesignObject = RectangleObject
+
+export type DesignObjectProps = Omit<DesignObject, 'id'>

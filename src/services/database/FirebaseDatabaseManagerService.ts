@@ -8,8 +8,8 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore'
-import { DatabaseManagerService } from './DatabaseManagerService'
-import { DesignData, DesignObject } from '../design/DesignManagerService'
+import { DatabaseManagerService, DesignData } from './DatabaseManagerService'
+import { DesignObject, DesignObjectProps } from '../design/DesignManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
 
@@ -75,7 +75,8 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const objectDocs = await getDocs(objectsCollectionReference)
     const designObjects: DesignObject[] = []
     objectDocs.forEach((objectDoc) => {
-      const designObject = objectDoc.data() as DesignObject
+      const data: DesignObjectProps = objectDoc.data() as DesignObjectProps
+      const designObject: DesignObject = { id: objectDoc.id, ...data }
       designObjects.push(designObject)
     })
     const designData: DesignData = { id: designDoc.id, objects: designObjects }

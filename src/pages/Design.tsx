@@ -5,7 +5,7 @@ import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
 import RightBanner from 'src/components/RightBanner'
 import { ServiceContext } from 'src/services/context'
-import { DesignData } from 'src/services/design/DesignManagerService'
+import { DesignData } from 'src/services/database/DatabaseManagerService'
 import { useObservable } from 'src/utils/hooks'
 import styled from 'styled-components'
 

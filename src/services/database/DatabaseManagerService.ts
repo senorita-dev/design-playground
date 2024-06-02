@@ -1,6 +1,6 @@
 import { User } from 'firebase/auth'
 import { Observable } from 'rxjs'
-import { DesignData, DesignObject } from '../design/DesignManagerService'
+import { DesignObject, DesignObjectProps } from '../design/DesignManagerService'
 
 export abstract class DatabaseManagerService {
   public abstract dispose(): void
@@ -11,7 +11,13 @@ export abstract class DatabaseManagerService {
   public abstract createDesignObject(
     user: User,
     designId: string,
-    designObject: DesignObject,
+    designObject: DesignObjectProps,
   ): Promise<void>
   public abstract observeDesignObjects(user: User, designId: string): Observable<DesignObject[]>
 }
+
+export interface DesignData {
+  id: string
+  objects: DesignObject[]
+}
+

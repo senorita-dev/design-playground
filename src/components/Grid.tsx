@@ -1,4 +1,4 @@
-import { DesignObject } from 'src/services/design/DesignManagerService'
+import { DesignObject, DesignObjectProps } from 'src/services/design/DesignManagerService'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -78,7 +78,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     switch (event.code) {
       case 'KeyR':
         const { x, y } = cursorPosition
-        const designObject: DesignObject = { type: 'rectangle', x, y }
+        const designObject: DesignObjectProps = { type: 'rectangle', x, y }
         await databaseService.createDesignObject(user, designId, designObject)
         break
       default:

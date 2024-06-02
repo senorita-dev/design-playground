@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs'
-import { DatabaseManagerService } from './DatabaseManagerService'
-import { DesignData, DesignObject } from '../design/DesignManagerService'
+import { DatabaseManagerService, DesignData } from './DatabaseManagerService'
+import { DesignObject } from '../design/DesignManagerService'
 
 export class MockDatabaseManagerService extends DatabaseManagerService {
   public dispose(): void {
