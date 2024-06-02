@@ -97,7 +97,11 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
     this.designsSubscription = onSnapshot(designObjectsCollectionReference, (snapshot) => {
       const docs = snapshot.docs
-      const designObjects: DesignObject[] = docs.map((doc) => doc.data() as DesignObject)
+      const designObjects: DesignObject[] = docs.map((doc) => {
+        const data: DesignObjectProps = doc.data() as DesignObjectProps
+        const designObject = { id: doc.id, ...data }
+        return designObject
+      })
       this.designObjectsSubject.next(designObjects)
     })
     return this.designObjectsSubject
