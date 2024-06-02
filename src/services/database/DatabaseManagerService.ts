@@ -1,6 +1,5 @@
 import { User } from 'firebase/auth'
 import { Observable } from 'rxjs'
-import { DesignObject, DesignObjectProps } from '../design/DesignManagerService'
 
 export abstract class DatabaseManagerService {
   public abstract dispose(): void
@@ -14,6 +13,9 @@ export abstract class DatabaseManagerService {
     designObject: DesignObjectProps,
   ): Promise<void>
   public abstract observeDesignObjects(user: User, designId: string): Observable<DesignObject[]>
+  public abstract setSelectedDesignObject(designObjectId: string): void
+  public abstract clearSelectedDesignObject(): void
+  public abstract observeSelectedDesignObject(): Observable<DesignObject | null>
 }
 
 export interface DesignData {
@@ -21,3 +23,19 @@ export interface DesignData {
   objects: DesignObject[]
 }
 
+type DesignObjectType = 'rectangle'
+
+interface BaseDesignObject {
+  id: string
+  type: DesignObjectType
+  x: number
+  y: number
+}
+
+interface RectangleObject extends BaseDesignObject {
+  type: 'rectangle'
+}
+
+export type DesignObject = RectangleObject
+
+export type DesignObjectProps = Omit<DesignObject, 'id'>

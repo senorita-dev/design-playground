@@ -8,8 +8,12 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore'
-import { DatabaseManagerService, DesignData } from './DatabaseManagerService'
-import { DesignObject, DesignObjectProps } from '../design/DesignManagerService'
+import {
+  DatabaseManagerService,
+  DesignData,
+  DesignObject,
+  DesignObjectProps,
+} from './DatabaseManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
 
@@ -19,12 +23,14 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   private designsSubject: BehaviorSubject<DesignData[]>
   private designObjectsSubscription?: Unsubscribe
   private designObjectsSubject: BehaviorSubject<DesignObject[]>
+  private selectedDesignObjectSubject: BehaviorSubject<DesignObject | null>
 
   public constructor(firestore: Firestore) {
     super()
     this.firestore = firestore
     this.designsSubject = new BehaviorSubject<DesignData[]>([])
     this.designObjectsSubject = new BehaviorSubject<DesignObject[]>([])
+    this.selectedDesignObjectSubject = new BehaviorSubject<DesignObject | null>(null)
   }
 
   public dispose(): void {
@@ -105,6 +111,20 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       this.designObjectsSubject.next(designObjects)
     })
     return this.designObjectsSubject
+  }
+
+  public setSelectedDesignObject(designObjectId: string): void {
+    const designObjects = this.designObjectsSubject.value
+    const designObject = designObjects.find(({ id }) => id === designObjectId)
+    this.selectedDesignObjectSubject.next(designObject ?? null)
+  }
+
+  public clearSelectedDesignObject(): void {
+    this.selectedDesignObjectSubject.next(null)
+  }
+
+  public observeSelectedDesignObject(): Observable<DesignObject | null> {
+    return this.selectedDesignObjectSubject
   }
 
   private getDesignsCollectionReference(user: User) {

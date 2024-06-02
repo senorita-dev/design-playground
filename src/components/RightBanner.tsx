@@ -4,8 +4,8 @@ import { useObservable } from 'src/utils/hooks'
 import styled from 'styled-components'
 
 const RightBanner: React.FC = () => {
-  const { designService } = useContext(ServiceContext)
-  const currentObject = useObservable(designService.observeCurrentObject())
+  const { databaseService } = useContext(ServiceContext)
+  const currentObject = useObservable(databaseService.observeSelectedDesignObject())
   if (currentObject === null || currentObject === undefined) {
     return <Container></Container>
   }

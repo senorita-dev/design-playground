@@ -1,4 +1,4 @@
-import { DesignObject, DesignObjectProps } from 'src/services/design/DesignManagerService'
+import { DesignObject, DesignObjectProps } from 'src/services/database/DatabaseManagerService'
 import styled from 'styled-components'
 import { assertNever } from 'src/utils/utils'
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -20,7 +20,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const gridRef = useRef<HTMLDivElement>(null)
   const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
-  const { databaseService, designService } = useContext(ServiceContext)
+  const { databaseService } = useContext(ServiceContext)
   const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null)
   useEffect(() => {
     if (designId === undefined) {
@@ -47,15 +47,10 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   }, [gridRef.current])
   useEffect(() => {
     if (selectedDesignId === null) {
-      designService.clearCurrentObject()
+      databaseService.clearSelectedDesignObject()
       return
     }
-    const designObject = designObjects.find(({id}) => id === selectedDesignId)
-    if (designObject === undefined) {
-      designService.clearCurrentObject()
-      return
-    }
-    designService.setCurrentObject(designObject)
+    databaseService.setSelectedDesignObject(selectedDesignId)
   }, [selectedDesignId, designObjects])
   useEffect(() => {
     const grid = gridRef.current
