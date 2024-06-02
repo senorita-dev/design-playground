@@ -106,9 +106,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     designObjectId: string,
   ): Promise<void> {
     const designObjectDocReference = this.getObjectDocReference(user, designId, designObjectId)
-    if (designObjectId === this.selectedDesignObjectSubject.value?.id) {
-      this.clearSelectedDesignObject()
-    }
     await deleteDoc(designObjectDocReference)
   }
 
@@ -120,9 +117,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designObjectDocReference = this.getObjectDocReference(user, designId, designObject.id)
     const updatedDesignObject: DesignObjectProps = designObject
     await updateDoc(designObjectDocReference, updatedDesignObject)
-    if (designObject.id === this.selectedDesignObjectSubject.value?.id) {
-      this.setSelectedDesignObject(designObject.id)
-    }
   }
 
   public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {
@@ -136,6 +130,12 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
         return designObject
       })
       this.designObjectsSubject.next(designObjects)
+      const updatedSelectedDesignObject = designObjects.find(({ id }) => id === this.selectedDesignObjectSubject.value?.id)
+      if (updatedSelectedDesignObject === undefined) {
+        this.clearSelectedDesignObject()
+        return
+      }
+      this.setSelectedDesignObject(updatedSelectedDesignObject.id)
     })
     return this.designObjectsSubject
   }
