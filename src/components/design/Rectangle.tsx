@@ -9,7 +9,7 @@ interface RectangleProps {
 
 const Rectangle: React.FC<RectangleProps> = ({ x, y, id, selected }) => {
   const className = selected ? 'selected' : ''
-  return <UiRectangle x={x} y={y} data-id={id} className={className}></UiRectangle>
+  return <UiRectangle x={x} y={y} data-id={id} className={className} draggable={true}></UiRectangle>
 }
 
 interface UiRectangleProps {
