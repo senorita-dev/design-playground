@@ -40,9 +40,11 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     function handleMouseClick(event: MouseEvent) {
       const target = event.target
       if (target === null || target === gridRef.current) {
+        databaseService.clearSelectedDesignObject()
         return
       }
       if (!(target instanceof HTMLElement)) {
+        databaseService.clearSelectedDesignObject()
         return
       }
       const id = target.dataset.id ?? null
@@ -66,11 +68,11 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     }
     grid.focus()
     grid.addEventListener('mousemove', handleMouseMove)
-    grid.addEventListener('click', handleMouseClick)
+    grid.addEventListener('mousedown', handleMouseClick)
     grid.addEventListener('dragend', handleMouseDrag)
     return () => {
       grid.removeEventListener('mousemove', handleMouseMove)
-      grid.removeEventListener('click', handleMouseClick)
+      grid.removeEventListener('mousedown', handleMouseClick)
       grid.removeEventListener('dragend', handleMouseDrag)
     }
   }, [databaseService, user, gridRef, designId, selectedObject])
