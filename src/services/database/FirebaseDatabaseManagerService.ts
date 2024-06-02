@@ -105,6 +105,9 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     designObjectId: string,
   ): Promise<void> {
     const designObjectDocReference = this.getObjectDocReference(user, designId, designObjectId)
+    if (designObjectId === this.selectedDesignObjectSubject.value?.id) {
+      this.clearSelectedDesignObject()
+    }
     await deleteDoc(designObjectDocReference)
   }
 
