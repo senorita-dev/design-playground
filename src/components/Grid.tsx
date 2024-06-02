@@ -5,6 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react'
 import { ServiceContext } from 'src/services/context'
 import { User } from 'firebase/auth'
 import Rectangle from './design/Rectangle'
+import { useObservable } from 'src/utils/hooks'
 
 interface GridProps {
   user: User
@@ -17,11 +18,11 @@ interface Position {
 }
 
 const Grid: React.FC<GridProps> = ({ user, designId }) => {
+  const { databaseService } = useContext(ServiceContext)
   const gridRef = useRef<HTMLDivElement>(null)
   const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
-  const { databaseService } = useContext(ServiceContext)
-  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(null)
+  const selectedObject = useObservable(databaseService.observeSelectedDesignObject())
   useEffect(() => {
     if (designId === undefined) {
       return
@@ -45,13 +46,6 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       grid.removeEventListener('click', handleMouseClick)
     }
   }, [gridRef.current])
-  useEffect(() => {
-    if (selectedDesignId === null) {
-      databaseService.clearSelectedDesignObject()
-      return
-    }
-    databaseService.setSelectedDesignObject(selectedDesignId)
-  }, [selectedDesignId, designObjects])
   useEffect(() => {
     const grid = gridRef.current
     if (grid === null) {
@@ -86,14 +80,17 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   function handleMouseClick(event: MouseEvent) {
     const target = event.target
     if (target === null || target === gridRef.current) {
-      setSelectedDesignId(null)
       return
     }
     if (!(target instanceof HTMLElement)) {
       return
     }
     const id = target.dataset.id ?? null
-    setSelectedDesignId(id)
+    if (id === null) {
+      databaseService.clearSelectedDesignObject()
+      return
+    }
+    databaseService.setSelectedDesignObject(id)
   }
   return (
     <Container ref={gridRef} tabIndex={0}>
@@ -101,7 +98,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
         const { id, x, y  } = designObject
         switch (designObject.type) {
           case 'rectangle':
-            return <Rectangle key={id} x={x} y={y} id={id} selected={selectedDesignId === id} />
+            return <Rectangle key={id} x={x} y={y} id={id} selected={selectedObject?.id === id} />
           default:
             assertNever(designObject.type)
         }
