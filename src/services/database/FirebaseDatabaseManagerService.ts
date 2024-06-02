@@ -7,6 +7,7 @@ import {
   Unsubscribe,
   doc,
   getDoc,
+  deleteDoc,
 } from 'firebase/firestore'
 import {
   DatabaseManagerService,
@@ -98,6 +99,15 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     await addDoc(objectsCollectionReference, designObject)
   }
 
+  public async deleteDesignObject(
+    user: User,
+    designId: string,
+    designObjectId: string,
+  ): Promise<void> {
+    const designObjectDocReference = this.getObjectDocReference(user, designId, designObjectId)
+    await deleteDoc(designObjectDocReference)
+  }
+
   public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {
     this.designObjectsSubscription?.()
     const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
@@ -137,5 +147,9 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
 
   private getObjectsCollectionReference(user: User, designId: string) {
     return collection(this.firestore, 'users', user.uid, 'designs', designId, 'objects')
+  }
+
+  private getObjectDocReference(user: User, designId: string, designObjectId: string) {
+    return doc(this.firestore, 'users', user.uid, 'designs', designId, 'objects', designObjectId)
   }
 }

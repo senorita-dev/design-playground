@@ -12,6 +12,11 @@ export abstract class DatabaseManagerService {
     designId: string,
     designObject: DesignObjectProps,
   ): Promise<void>
+  public abstract deleteDesignObject(
+    user: User,
+    designId: string,
+    designObjectId: string,
+  ): Promise<void>
   public abstract observeDesignObjects(user: User, designId: string): Observable<DesignObject[]>
   public abstract setSelectedDesignObject(designObjectId: string): void
   public abstract clearSelectedDesignObject(): void
