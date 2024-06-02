@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   deleteDoc,
+  updateDoc,
 } from 'firebase/firestore'
 import {
   DatabaseManagerService,
@@ -109,6 +110,19 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       this.clearSelectedDesignObject()
     }
     await deleteDoc(designObjectDocReference)
+  }
+
+  public async editDesignObject(
+    user: User,
+    designId: string,
+    designObject: DesignObject,
+  ): Promise<void> {
+    const designObjectDocReference = this.getObjectDocReference(user, designId, designObject.id)
+    const updatedDesignObject: DesignObjectProps = designObject
+    await updateDoc(designObjectDocReference, updatedDesignObject)
+    if (designObject.id === this.selectedDesignObjectSubject.value?.id) {
+      this.setSelectedDesignObject(designObject.id)
+    }
   }
 
   public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {

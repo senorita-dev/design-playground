@@ -23,6 +23,9 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
   public deleteDesignObject(): Promise<void> {
     throw new Error('Method not implemented.')
   }
+  public editDesignObject(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
   public observeDesignObjects(): Observable<DesignObject[]> {
     throw new Error('Method not implemented.')
   }
