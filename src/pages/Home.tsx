@@ -39,7 +39,7 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
     return () => {
       subscription.unsubscribe()
     }
-  }, [databaseService])
+  }, [databaseService, user])
   return (
     <div>
       <h1>Home</h1>

@@ -8,21 +8,21 @@ type Dimensions = {
 function GridBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 })
-  const resizeObserver = new ResizeObserver(() => {
-    const canvasElement = canvasRef.current
-    if (canvasElement === null) {
-      return
-    }
-    const { width, height } = canvasElement.getBoundingClientRect()
-    setDimensions({ width, height })
-  })
   const scaling = window.devicePixelRatio || 1
   useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      const canvasElement = canvasRef.current
+      if (canvasElement === null) {
+        return
+      }
+      const { width, height } = canvasElement.getBoundingClientRect()
+      setDimensions({ width, height })
+    })
     if (canvasRef.current) {
       resizeObserver.observe(canvasRef.current)
     }
     return () => resizeObserver.disconnect()
-  }, [canvasRef.current])
+  }, [])
   useEffect(() => {
     const canvasElement = canvasRef.current
     if (canvasElement === null) {
@@ -35,7 +35,7 @@ function GridBackground() {
     drawGrid(ctx)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.scale(scaling, scaling)
-  }, [canvasRef.current, dimensions, scaling])
+  }, [dimensions, scaling])
   const { width, height } = dimensions
   return <Canvas ref={canvasRef} width={width * scaling} height={height * scaling} />
 }

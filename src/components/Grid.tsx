@@ -32,8 +32,26 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       error: (error) => console.error(error),
     })
     return () => subscription.unsubscribe()
-  }, [databaseService, designId])
+  }, [databaseService, user, designId])
   useEffect(() => {
+    function handleMouseMove(event: MouseEvent) {
+      setCursorPosition({ x: event.clientX, y: event.clientY })
+    }
+    function handleMouseClick(event: MouseEvent) {
+      const target = event.target
+      if (target === null || target === gridRef.current) {
+        return
+      }
+      if (!(target instanceof HTMLElement)) {
+        return
+      }
+      const id = target.dataset.id ?? null
+      if (id === null) {
+        databaseService.clearSelectedDesignObject()
+        return
+      }
+      databaseService.setSelectedDesignObject(id)
+    }
     const grid = gridRef.current
     if (grid === null) {
       return
@@ -45,59 +63,43 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       grid.removeEventListener('mousemove', handleMouseMove)
       grid.removeEventListener('click', handleMouseClick)
     }
-  }, [gridRef.current])
+  }, [databaseService, gridRef])
   useEffect(() => {
+    async function handleKeydown(event: KeyboardEvent) {
+      if (event.repeat) {
+        return null
+      }
+      if (designId === undefined) {
+        return null
+      }
+      if (event.ctrlKey) {
+        return null
+      }
+      switch (event.code) {
+        case 'KeyR': {
+          const { x, y } = cursorPosition
+          const designObject: DesignObjectProps = { type: 'rectangle', x, y }
+          await databaseService.createDesignObject(user, designId, designObject)
+          break
+        }
+        case 'Delete': {
+          if (selectedObject === null || selectedObject === undefined) {
+            return
+          }
+          await databaseService.deleteDesignObject(user, designId, selectedObject.id)
+          break
+        }
+        default:
+          break
+      }
+    }
     const grid = gridRef.current
     if (grid === null) {
       return
     }
     grid.addEventListener('keydown', handleKeydown)
     return () => grid.removeEventListener('keydown', handleKeydown)
-  }, [gridRef.current, cursorPosition, selectedObject])
-  async function handleKeydown(event: KeyboardEvent) {
-    if (event.repeat) {
-      return null
-    }
-    if (designId === undefined) {
-      return null
-    }
-    if (event.ctrlKey) {
-      return null
-    }
-    switch (event.code) {
-      case 'KeyR':
-        const { x, y } = cursorPosition
-        const designObject: DesignObjectProps = { type: 'rectangle', x, y }
-        await databaseService.createDesignObject(user, designId, designObject)
-        break
-      case 'Delete':
-        if (selectedObject === null || selectedObject === undefined) {
-          return
-        }
-        await databaseService.deleteDesignObject(user, designId, selectedObject.id)
-        break
-      default:
-        break
-    }
-  }
-  function handleMouseMove(event: MouseEvent) {
-    setCursorPosition({ x: event.clientX, y: event.clientY })
-  }
-  function handleMouseClick(event: MouseEvent) {
-    const target = event.target
-    if (target === null || target === gridRef.current) {
-      return
-    }
-    if (!(target instanceof HTMLElement)) {
-      return
-    }
-    const id = target.dataset.id ?? null
-    if (id === null) {
-      databaseService.clearSelectedDesignObject()
-      return
-    }
-    databaseService.setSelectedDesignObject(id)
-  }
+  }, [databaseService, designId, user, gridRef, cursorPosition, selectedObject])
   return (
     <Container ref={gridRef} tabIndex={0}>
       {designObjects.map((designObject) => {
