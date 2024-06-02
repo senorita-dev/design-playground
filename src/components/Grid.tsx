@@ -53,7 +53,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     }
     grid.addEventListener('keydown', handleKeydown)
     return () => grid.removeEventListener('keydown', handleKeydown)
-  }, [gridRef.current, cursorPosition])
+  }, [gridRef.current, cursorPosition, selectedObject])
   async function handleKeydown(event: KeyboardEvent) {
     if (event.repeat) {
       return null
@@ -69,6 +69,12 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
         const { x, y } = cursorPosition
         const designObject: DesignObjectProps = { type: 'rectangle', x, y }
         await databaseService.createDesignObject(user, designId, designObject)
+        break
+      case 'Delete':
+        if (selectedObject === null || selectedObject === undefined) {
+          return
+        }
+        await databaseService.deleteDesignObject(user, designId, selectedObject.id)
         break
       default:
         break
