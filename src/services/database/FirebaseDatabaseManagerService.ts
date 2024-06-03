@@ -9,6 +9,8 @@ import {
   getDoc,
   deleteDoc,
   updateDoc,
+  query,
+  orderBy,
 } from 'firebase/firestore'
 import {
   DatabaseManagerService,
@@ -67,7 +69,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     this.designsSubscription?.()
     const designsCollectionReference = this.getDesignsCollectionReference(user)
     this.designsSubscription = onSnapshot(
-      designsCollectionReference,
+      query(designsCollectionReference, orderBy('createdAt', 'desc')),
       (snapshot) => {
         const docs = snapshot.docs
         const designs: DesignDataMetadata[] = docs.map(
