@@ -4,9 +4,7 @@ import { Observable } from 'rxjs'
 export abstract class DatabaseManagerService {
   public abstract dispose(): void
   public abstract createDesign(user: User, name: string): Promise<void>
-  public abstract getDesigns(user: User): Promise<DesignDataMetadata[]>
   public abstract observeDesigns(user: User): Observable<DesignDataMetadata[]>
-  public abstract getDesign(user: User, designId: string): Promise<DesignData>
   public abstract createDesignObject(
     user: User,
     designId: string,

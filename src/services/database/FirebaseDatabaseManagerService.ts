@@ -2,11 +2,9 @@ import {
   Firestore,
   addDoc,
   collection,
-  getDocs,
   onSnapshot,
   Unsubscribe,
   doc,
-  getDoc,
   deleteDoc,
   updateDoc,
   query,
@@ -14,7 +12,6 @@ import {
 } from 'firebase/firestore'
 import {
   DatabaseManagerService,
-  DesignData,
   DesignObject,
   DesignObjectProps,
   DesignDataMetadata,
@@ -49,20 +46,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     await addDoc(designsCollectionReference, designDataProps)
   }
 
-  public async getDesigns(user: User): Promise<DesignDataMetadata[]> {
-    const designsCollection = this.getDesignsCollectionReference(user)
-    const designDocs = await getDocs(designsCollection)
-    const designs: DesignDataMetadata[] = []
-    designDocs.forEach((designDoc) => {
-      const designData: DesignDataMetadata = {
-        id: designDoc.id,
-        ...designDoc.data(),
-      } as DesignDataMetadata
-      designs.push(designData)
-    })
-    return designs
-  }
-
   public observeDesigns(user: User): Observable<DesignDataMetadata[]> {
     // Have to unsubscribe previous subscription because of React Strict Mode in development.
     // Simply checking if the subscription exists results in multiple subscriptions.
@@ -82,25 +65,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       },
     )
     return this.designsSubject
-  }
-
-  public async getDesign(user: User, designId: string): Promise<DesignData> {
-    const designDocReference = this.getDesignDocReference(user, designId)
-    const designDoc = await getDoc(designDocReference)
-    const objectsCollectionReference = this.getObjectsCollectionReference(user, designId)
-    const objectDocs = await getDocs(objectsCollectionReference)
-    const designObjects: DesignObject[] = []
-    objectDocs.forEach((objectDoc) => {
-      const data: DesignObjectProps = objectDoc.data() as DesignObjectProps
-      const designObject: DesignObject = { id: objectDoc.id, ...data }
-      designObjects.push(designObject)
-    })
-    const designData: DesignData = {
-      id: designDoc.id,
-      ...designDoc.data(),
-      objects: designObjects,
-    } as DesignData
-    return designData
   }
 
   public async createDesignObject(
