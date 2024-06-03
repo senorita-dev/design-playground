@@ -6,6 +6,8 @@ import { ServiceContext } from 'src/services/context'
 import { DesignData } from 'src/services/database/DatabaseManagerService'
 import NewDesignButton from 'src/components/NewDesignButton'
 import { useObservable } from 'src/utils/hooks'
+import LoginButton from 'src/components/LoginButton'
+import LogoutButton from 'src/components/LogoutButton'
 
 function Home() {
   const { userService } = useContext(ServiceContext)
@@ -20,10 +22,8 @@ const SignedOutContent = () => {
   return (
     <div>
       <h1>Home</h1>
-      <h2>Designs</h2>
-      <p>
-        <Link to={'/login'}>Log in</Link> to see your designs
-      </p>
+      <p>Login to see your designs</p>
+      <LoginButton />
     </div>
   )
 }
@@ -43,7 +43,9 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   return (
     <div>
       <h1>Home</h1>
-      <h2>Welcome, {user.displayName ?? 'user'}</h2>
+      <h2>
+        Welcome, {user.displayName ?? 'user'} <LogoutButton />
+      </h2>
       <h2>
         Designs <NewDesignButton user={user} />
       </h2>
