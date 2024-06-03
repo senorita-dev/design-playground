@@ -11,14 +11,17 @@ import styled from 'styled-components'
 function Design() {
   const { userService } = useContext(ServiceContext)
   const user = useObservable(userService.observeUser())
-  if (user === null || user === undefined) {
+  if (user === undefined) {
+    return <Container>Loading...</Container>
+  }
+  if (user === null) {
     return <SignedOutContent />
   }
   return <SignedInContent user={user} />
 }
 
 const SignedOutContent = () => {
-  return <Navigate to='/' />
+  return <Navigate to="/" />
 }
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
