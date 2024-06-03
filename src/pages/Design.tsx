@@ -43,6 +43,15 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
       setDesign(fetchedDesign)
     }
   }, [databaseService, designId, user])
+  if (designId === undefined) {
+    return (
+      <Container>
+        <Link to={'/'}>{'<'}Back</Link>
+        <h1>Design</h1>
+        <p>No design selected</p>
+      </Container>
+    )
+  }
   console.log('design', design)
   return (
     <Container>

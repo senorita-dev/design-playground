@@ -9,7 +9,7 @@ import { useObservable } from 'src/utils/hooks'
 
 interface GridProps {
   user: User
-  designId?: string
+  designId: string
 }
 
 interface Position {
@@ -25,9 +25,6 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const [dragStartPosition, setDragStartPosition] = useState<Position>({ x: 0, y: 0 })
   const selectedObject = useObservable(databaseService.observeSelectedDesignObject())
   useEffect(() => {
-    if (designId === undefined) {
-      return
-    }
     const subscription = databaseService.observeDesignObjects(user, designId).subscribe({
       next: (designObjects) => setDesignObjects(designObjects),
       error: (error) => console.error(error),
@@ -58,9 +55,6 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
       event.preventDefault()
     }
     function handleMouseUp() {
-      if (designId === undefined) {
-        return
-      }
       if (selectedObject === null || selectedObject === undefined) {
         return
       }
@@ -86,9 +80,6 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   useEffect(() => {
     async function handleKeydown(event: KeyboardEvent) {
       if (event.repeat) {
-        return null
-      }
-      if (designId === undefined) {
         return null
       }
       if (event.ctrlKey) {
