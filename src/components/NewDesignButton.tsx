@@ -11,8 +11,9 @@ const NewDesignButton: React.FC<NewDesignButtonProps> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
   const designs = useObservable(databaseService.observeDesigns(user)) ?? []
   const index = designs.length + 1
+  const name = `Design ${index}`
   const handleNewDesign = async () => {
-    databaseService.createDesign(user, { name: `Design ${index}`})
+    databaseService.createDesign(user, name)
   }
   return <button onClick={handleNewDesign}>New design</button>
 }

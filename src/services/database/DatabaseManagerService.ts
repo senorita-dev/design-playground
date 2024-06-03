@@ -3,9 +3,9 @@ import { Observable } from 'rxjs'
 
 export abstract class DatabaseManagerService {
   public abstract dispose(): void
-  public abstract createDesign(user: User, designDataProps: DesignDataProps): Promise<void>
-  public abstract getDesigns(user: User): Promise<PartialDesignData[]>
-  public abstract observeDesigns(user: User): Observable<PartialDesignData[]>
+  public abstract createDesign(user: User, name: string): Promise<void>
+  public abstract getDesigns(user: User): Promise<DesignDataMetadata[]>
+  public abstract observeDesigns(user: User): Observable<DesignDataMetadata[]>
   public abstract getDesign(user: User, designId: string): Promise<DesignData>
   public abstract createDesignObject(
     user: User,
@@ -27,16 +27,15 @@ export abstract class DatabaseManagerService {
   public abstract clearSelectedDesignObject(): void
   public abstract observeSelectedDesignObject(): Observable<DesignObject | null>
 }
-
-export type DesignDataProps = Omit<DesignData, 'id' | 'objects'>
-
-export type PartialDesignData = Pick<DesignData, 'id' | 'name'>
-
-export interface DesignData {
+export interface DesignDataMetadata {
   id: string
   name: string
-  objects: DesignObject[]
+  createdAt: Date
 }
+
+export type DesignData = DesignDataMetadata & { objects: DesignObject[] }
+
+export type GetDesignDataType = DesignDataMetadata
 
 type DesignObjectType = 'rectangle'
 

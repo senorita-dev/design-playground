@@ -13,10 +13,9 @@ import {
 import {
   DatabaseManagerService,
   DesignData,
-  DesignDataProps,
   DesignObject,
   DesignObjectProps,
-  PartialDesignData,
+  DesignDataMetadata,
 } from './DatabaseManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
@@ -24,7 +23,7 @@ import { User } from 'firebase/auth'
 export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   private firestore: Firestore
   private designsSubscription?: Unsubscribe
-  private designsSubject: BehaviorSubject<PartialDesignData[]>
+  private designsSubject: BehaviorSubject<DesignDataMetadata[]>
   private designObjectsSubscription?: Unsubscribe
   private designObjectsSubject: BehaviorSubject<DesignObject[]>
   private selectedDesignObjectSubject: BehaviorSubject<DesignObject | null>
@@ -32,7 +31,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   public constructor(firestore: Firestore) {
     super()
     this.firestore = firestore
-    this.designsSubject = new BehaviorSubject<PartialDesignData[]>([])
+    this.designsSubject = new BehaviorSubject<DesignDataMetadata[]>([])
     this.designObjectsSubject = new BehaviorSubject<DesignObject[]>([])
     this.selectedDesignObjectSubject = new BehaviorSubject<DesignObject | null>(null)
   }
@@ -42,23 +41,27 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     this.designObjectsSubscription?.()
   }
 
-  public async createDesign(user: User, designDataProps: DesignDataProps): Promise<void> {
+  public async createDesign(user: User, name: string): Promise<void> {
     const designsCollectionReference = this.getDesignsCollectionReference(user)
+    const designDataProps: Omit<DesignDataMetadata, 'id'> = { name, createdAt: new Date() }
     await addDoc(designsCollectionReference, designDataProps)
   }
 
-  public async getDesigns(user: User): Promise<PartialDesignData[]> {
+  public async getDesigns(user: User): Promise<DesignDataMetadata[]> {
     const designsCollection = this.getDesignsCollectionReference(user)
     const designDocs = await getDocs(designsCollection)
-    const designs: PartialDesignData[] = []
+    const designs: DesignDataMetadata[] = []
     designDocs.forEach((designDoc) => {
-      const designData: PartialDesignData = { id: designDoc.id, ...designDoc.data() as DesignDataProps }
+      const designData: DesignDataMetadata = {
+        id: designDoc.id,
+        ...designDoc.data(),
+      } as DesignDataMetadata
       designs.push(designData)
     })
     return designs
   }
 
-  public observeDesigns(user: User): Observable<PartialDesignData[]> {
+  public observeDesigns(user: User): Observable<DesignDataMetadata[]> {
     // Have to unsubscribe previous subscription because of React Strict Mode in development.
     // Simply checking if the subscription exists results in multiple subscriptions.
     this.designsSubscription?.()
@@ -67,7 +70,9 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       designsCollectionReference,
       (snapshot) => {
         const docs = snapshot.docs
-        const designs: PartialDesignData[] = docs.map((doc) => ({ id: doc.id, ...doc.data() as DesignDataProps }))
+        const designs: DesignDataMetadata[] = docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as DesignDataMetadata),
+        )
         this.designsSubject.next(designs)
       },
       (error) => {
@@ -88,7 +93,11 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       const designObject: DesignObject = { id: objectDoc.id, ...data }
       designObjects.push(designObject)
     })
-    const designData: DesignData = { id: designDoc.id, ...designDoc.data() as DesignDataProps, objects: designObjects }
+    const designData: DesignData = {
+      id: designDoc.id,
+      ...designDoc.data(),
+      objects: designObjects,
+    } as DesignData
     return designData
   }
 

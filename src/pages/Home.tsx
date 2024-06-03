@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { User } from 'firebase/auth'
 import 'src/css/Home.css'
 import { ServiceContext } from 'src/services/context'
-import { PartialDesignData } from 'src/services/database/DatabaseManagerService'
+import { DesignDataMetadata } from 'src/services/database/DatabaseManagerService'
 import NewDesignButton from 'src/components/NewDesignButton'
 import { useObservable } from 'src/utils/hooks'
 import LoginButton from 'src/components/LoginButton'
@@ -30,7 +30,7 @@ const SignedOutContent = () => {
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
-  const designs: PartialDesignData[] = useObservable(databaseService.observeDesigns(user)) ?? []
+  const designs: DesignDataMetadata[] = useObservable(databaseService.observeDesigns(user)) ?? []
   return (
     <div>
       <h1>Home</h1>
