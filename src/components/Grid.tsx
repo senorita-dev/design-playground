@@ -20,17 +20,10 @@ interface Position {
 const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const { databaseService } = useContext(ServiceContext)
   const gridRef = useRef<HTMLDivElement>(null)
-  const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
   const [dragStartPosition, setDragStartPosition] = useState<Position>({ x: 0, y: 0 })
   const selectedObject = useObservable(databaseService.observeSelectedDesignObject())
-  useEffect(() => {
-    const subscription = databaseService.observeDesignObjects(user, designId).subscribe({
-      next: (designObjects) => setDesignObjects(designObjects),
-      error: (error) => console.error(error),
-    })
-    return () => subscription.unsubscribe()
-  }, [databaseService, user, designId])
+  const designObjects = useObservable(databaseService.observeCurrentDesignObjects()) ?? []
   useEffect(() => {
     function handleMouseMove(event: MouseEvent) {
       setCursorPosition({ x: event.clientX, y: event.clientY })

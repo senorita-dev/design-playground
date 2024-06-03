@@ -8,13 +8,16 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
   public createDesign(): Promise<void> {
     throw new Error('Method not implemented.')
   }
+  public observeDesigns(): Observable<DesignDataMetadata[]> {
+    throw new Error('Method not implemented.')
+  }
   public setCurrentDesign(): void {
     throw new Error('Method not implemented.')
   }
   public observeCurrentDesign(): Observable<DesignDataMetadata | null> {
     throw new Error('Method not implemented.')
   }
-  public observeDesigns(): Observable<DesignDataMetadata[]> {
+  public observeCurrentDesignObjects(): Observable<DesignObject[]> {
     throw new Error('Method not implemented.')
   }
   public createDesignObject(): Promise<void> {
@@ -24,9 +27,6 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
     throw new Error('Method not implemented.')
   }
   public editDesignObject(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-  public observeDesignObjects(): Observable<DesignObject[]> {
     throw new Error('Method not implemented.')
   }
   public setSelectedDesignObject(): void {

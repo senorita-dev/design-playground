@@ -50,23 +50,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     await addDoc(designsCollectionReference, designDataProps)
   }
 
-  public setCurrentDesign(user: User, designId: string): void {
-    this.designSubscription?.()
-    const designDocReference = this.getDesignDocReference(user, designId)
-    this.designSubscription = onSnapshot(designDocReference, (doc) => {
-      if (doc.exists() === false) {
-        this.designSubject.next(null)
-        return
-      }
-      const designData: DesignDataMetadata = { id: doc.id, ...doc.data() } as DesignDataMetadata
-      this.designSubject.next(designData)
-    })
-  }
-
-  public observeCurrentDesign(): Observable<DesignDataMetadata | null> {
-    return this.designSubject
-  }
-
   public observeDesigns(user: User): Observable<DesignDataMetadata[]> {
     // Have to unsubscribe previous subscription because of React Strict Mode in development.
     // Simply checking if the subscription exists results in multiple subscriptions.
@@ -86,6 +69,54 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       },
     )
     return this.designsSubject
+  }
+
+  public setCurrentDesign(user: User, designId: string): void {
+    this.updateCurrentDesign(user, designId)
+    this.updateCurrentDesignObjects(user, designId)
+  }
+
+  private updateCurrentDesign(user: User, designId: string) {
+    this.designSubscription?.()
+    const designDocReference = this.getDesignDocReference(user, designId)
+    this.designSubscription = onSnapshot(designDocReference, (doc) => {
+      if (doc.exists() === false) {
+        this.designSubject.next(null)
+        return
+      }
+      const designData: DesignDataMetadata = { id: doc.id, ...doc.data() } as DesignDataMetadata
+      this.designSubject.next(designData)
+    })
+  }
+
+  private updateCurrentDesignObjects(user: User, designId: string) {
+    this.designObjectsSubscription?.()
+    const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
+    this.designsSubscription = onSnapshot(designObjectsCollectionReference, (snapshot) => {
+      const docs = snapshot.docs
+      const designObjects: DesignObject[] = docs.map((doc) => {
+        const data: DesignObjectProps = doc.data() as DesignObjectProps
+        const designObject = { id: doc.id, ...data }
+        return designObject
+      })
+      this.designObjectsSubject.next(designObjects)
+      const updatedSelectedDesignObject = designObjects.find(
+        ({ id }) => id === this.selectedDesignObjectSubject.value?.id,
+      )
+      if (updatedSelectedDesignObject === undefined) {
+        this.clearSelectedDesignObject()
+        return
+      }
+      this.setSelectedDesignObject(updatedSelectedDesignObject.id)
+    })
+  }
+
+  public observeCurrentDesign(): Observable<DesignDataMetadata | null> {
+    return this.designSubject
+  }
+
+  public observeCurrentDesignObjects(): Observable<DesignObject[]> {
+    return this.designObjectsSubject
   }
 
   public async createDesignObject(
@@ -114,29 +145,6 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designObjectDocReference = this.getObjectDocReference(user, designId, designObject.id)
     const updatedDesignObject: DesignObjectProps = designObject
     await updateDoc(designObjectDocReference, updatedDesignObject)
-  }
-
-  public observeDesignObjects(user: User, designId: string): Observable<DesignObject[]> {
-    this.designObjectsSubscription?.()
-    const designObjectsCollectionReference = this.getObjectsCollectionReference(user, designId)
-    this.designsSubscription = onSnapshot(designObjectsCollectionReference, (snapshot) => {
-      const docs = snapshot.docs
-      const designObjects: DesignObject[] = docs.map((doc) => {
-        const data: DesignObjectProps = doc.data() as DesignObjectProps
-        const designObject = { id: doc.id, ...data }
-        return designObject
-      })
-      this.designObjectsSubject.next(designObjects)
-      const updatedSelectedDesignObject = designObjects.find(
-        ({ id }) => id === this.selectedDesignObjectSubject.value?.id,
-      )
-      if (updatedSelectedDesignObject === undefined) {
-        this.clearSelectedDesignObject()
-        return
-      }
-      this.setSelectedDesignObject(updatedSelectedDesignObject.id)
-    })
-    return this.designObjectsSubject
   }
 
   public setSelectedDesignObject(designObjectId: string): void {
