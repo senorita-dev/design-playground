@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs'
-import { DatabaseManagerService, DesignData, DesignObject } from './DatabaseManagerService'
+import { DatabaseManagerService, DesignData, DesignObject, PartialDesignData } from './DatabaseManagerService'
 
 export class MockDatabaseManagerService extends DatabaseManagerService {
   public dispose(): void {
@@ -8,10 +8,10 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
   public addDesign(): Promise<void> {
     throw new Error('Method not implemented.')
   }
-  public getDesigns(): Promise<DesignData[]> {
+  public getDesigns(): Promise<PartialDesignData[]> {
     throw new Error('Method not implemented.')
   }
-  public observeDesigns(): Observable<DesignData[]> {
+  public observeDesigns(): Observable<PartialDesignData[]> {
     throw new Error('Method not implemented.')
   }
   public getDesign(): Promise<DesignData> {

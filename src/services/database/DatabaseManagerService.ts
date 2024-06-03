@@ -4,8 +4,8 @@ import { Observable } from 'rxjs'
 export abstract class DatabaseManagerService {
   public abstract dispose(): void
   public abstract addDesign(user: User): Promise<void>
-  public abstract getDesigns(user: User): Promise<DesignData[]>
-  public abstract observeDesigns(user: User): Observable<DesignData[]>
+  public abstract getDesigns(user: User): Promise<PartialDesignData[]>
+  public abstract observeDesigns(user: User): Observable<PartialDesignData[]>
   public abstract getDesign(user: User, designId: string): Promise<DesignData>
   public abstract createDesignObject(
     user: User,
@@ -27,6 +27,8 @@ export abstract class DatabaseManagerService {
   public abstract clearSelectedDesignObject(): void
   public abstract observeSelectedDesignObject(): Observable<DesignObject | null>
 }
+
+export type PartialDesignData = Pick<DesignData, 'id'>
 
 export interface DesignData {
   id: string
