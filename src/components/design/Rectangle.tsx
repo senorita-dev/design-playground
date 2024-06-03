@@ -9,7 +9,7 @@ interface RectangleProps {
 
 const Rectangle: React.FC<RectangleProps> = ({ x, y, id, selected }) => {
   const className = selected ? 'selected' : ''
-  return <UiRectangle x={x} y={y} data-id={id} className={className} draggable={true}></UiRectangle>
+  return <UiRectangle x={x} y={y} data-id={id} className={className}></UiRectangle>
 }
 
 interface UiRectangleProps {
@@ -25,7 +25,6 @@ const UiRectangle = styled.div<UiRectangleProps>`
   height: 100px;
   background-color: var(--off-white);
   border: 1px solid black;
-  cursor: pointer;
 
   &.selected {
     border: 3px solid var(--selected);

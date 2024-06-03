@@ -22,6 +22,7 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
   const gridRef = useRef<HTMLDivElement>(null)
   const [designObjects, setDesignObjects] = useState<DesignObject[]>([])
   const [cursorPosition, setCursorPosition] = useState<Position>({ x: 0, y: 0 })
+  const [dragStartPosition, setDragStartPosition] = useState<Position>({ x: 0, y: 0 })
   const selectedObject = useObservable(databaseService.observeSelectedDesignObject())
   useEffect(() => {
     if (designId === undefined) {
@@ -53,13 +54,19 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
         return
       }
       databaseService.setSelectedDesignObject(id)
+      setDragStartPosition({ x: event.clientX, y: event.clientY })
+      event.preventDefault()
     }
-    function handleMouseDrag(event: MouseEvent) {
-      if (selectedObject === null || selectedObject === undefined || designId === undefined) {
+    function handleMouseUp() {
+      if (designId === undefined) {
         return
       }
-      const { clientX, clientY } = event
-      const updatedDesignObject: DesignObject = { ...selectedObject, x: clientX, y: clientY }
+      if (selectedObject === null || selectedObject === undefined) {
+        return
+      }
+      const x = selectedObject.x + (cursorPosition.x - dragStartPosition.x)
+      const y = selectedObject.y + (cursorPosition.y - dragStartPosition.y)
+      const updatedDesignObject: DesignObject = { ...selectedObject, x, y }
       databaseService.editDesignObject(user, designId, updatedDesignObject)
     }
     const grid = gridRef.current
@@ -69,13 +76,13 @@ const Grid: React.FC<GridProps> = ({ user, designId }) => {
     grid.focus()
     grid.addEventListener('mousemove', handleMouseMove)
     grid.addEventListener('mousedown', handleMouseDown)
-    grid.addEventListener('dragend', handleMouseDrag)
+    grid.addEventListener('mouseup', handleMouseUp)
     return () => {
       grid.removeEventListener('mousemove', handleMouseMove)
       grid.removeEventListener('mousedown', handleMouseDown)
-      grid.removeEventListener('dragend', handleMouseDrag)
+      grid.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [databaseService, user, gridRef, designId, selectedObject])
+  }, [databaseService, user, gridRef, designId, selectedObject, cursorPosition, dragStartPosition])
   useEffect(() => {
     async function handleKeydown(event: KeyboardEvent) {
       if (event.repeat) {
