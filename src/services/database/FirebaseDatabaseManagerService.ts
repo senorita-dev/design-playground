@@ -13,6 +13,7 @@ import {
 import {
   DatabaseManagerService,
   DesignData,
+  DesignDataProps,
   DesignObject,
   DesignObjectProps,
   PartialDesignData,
@@ -41,9 +42,9 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     this.designObjectsSubscription?.()
   }
 
-  public async addDesign(user: User): Promise<void> {
+  public async createDesign(user: User, designDataProps: DesignDataProps): Promise<void> {
     const designsCollectionReference = this.getDesignsCollectionReference(user)
-    await addDoc(designsCollectionReference, { design: 'new design' })
+    await addDoc(designsCollectionReference, designDataProps)
   }
 
   public async getDesigns(user: User): Promise<PartialDesignData[]> {
@@ -51,8 +52,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designDocs = await getDocs(designsCollection)
     const designs: PartialDesignData[] = []
     designDocs.forEach((designDoc) => {
-      console.log('designDoc', designDoc.data())
-      const designData: PartialDesignData = { id: designDoc.id }
+      const designData: PartialDesignData = { id: designDoc.id, ...designDoc.data() as DesignDataProps }
       designs.push(designData)
     })
     return designs
@@ -67,7 +67,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       designsCollectionReference,
       (snapshot) => {
         const docs = snapshot.docs
-        const designs: PartialDesignData[] = docs.map((doc) => ({ id: doc.id }))
+        const designs: PartialDesignData[] = docs.map((doc) => ({ id: doc.id, ...doc.data() as DesignDataProps }))
         this.designsSubject.next(designs)
       },
       (error) => {
@@ -88,7 +88,7 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       const designObject: DesignObject = { id: objectDoc.id, ...data }
       designObjects.push(designObject)
     })
-    const designData: DesignData = { id: designDoc.id, objects: designObjects }
+    const designData: DesignData = { id: designDoc.id, ...designDoc.data() as DesignDataProps, objects: designObjects }
     return designData
   }
 

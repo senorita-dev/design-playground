@@ -50,11 +50,11 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
         Designs <NewDesignButton user={user} />
       </h2>
       <ul>
-        {designs.map((design, index) => {
-          const path = `/design/${design.id}`
+        {designs.map(({ id, name }) => {
+          const path = `/design/${id}`
           return (
-            <li key={index}>
-              <Link to={path}>{design.id}</Link>
+            <li key={id}>
+              <Link to={path}>{name}</Link>
             </li>
           )
         })}

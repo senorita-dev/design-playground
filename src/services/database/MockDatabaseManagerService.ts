@@ -5,7 +5,7 @@ export class MockDatabaseManagerService extends DatabaseManagerService {
   public dispose(): void {
     throw new Error('Method not implemented.')
   }
-  public addDesign(): Promise<void> {
+  public createDesign(): Promise<void> {
     throw new Error('Method not implemented.')
   }
   public getDesigns(): Promise<PartialDesignData[]> {
