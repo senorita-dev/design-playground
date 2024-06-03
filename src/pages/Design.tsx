@@ -1,6 +1,6 @@
 import { User } from 'firebase/auth'
 import { useContext } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
 import RightBanner from 'src/components/RightBanner'
@@ -18,15 +18,7 @@ function Design() {
 }
 
 const SignedOutContent = () => {
-  return (
-    <Container>
-      <Link to={'/'}>{'<'}Back</Link>
-      <h1>Design</h1>
-      <p>
-        <Link to={'/login'}>Log in</Link> to see your designs
-      </p>
-    </Container>
-  )
+  return <Navigate to='/' />
 }
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
