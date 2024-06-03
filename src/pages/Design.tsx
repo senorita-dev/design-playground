@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
@@ -11,7 +11,7 @@ import styled from 'styled-components'
 function Design() {
   const { userService } = useContext(ServiceContext)
   const user = useObservable(userService.observeUser())
-  if (user === undefined) {
+  if (user === null || user === undefined) {
     return <Container>Loading...</Container>
   }
   if (user === null) {
@@ -28,11 +28,13 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
   const { designId } = useParams()
   const design = useObservable(databaseService.observeCurrentDesign())
-  if (designId === undefined) {
-    return
-  }
-  databaseService.setCurrentDesign(user, designId)
-  if (design === null || design === undefined) {
+  useEffect(() => {
+    if (designId === undefined) {
+      return
+    }
+    databaseService.setCurrentDesign(user, designId)
+  }, [designId])
+  if (designId === undefined || design === null || design === undefined) {
     return <p>Not found</p>
   }
   return (
