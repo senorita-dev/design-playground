@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { User } from 'firebase/auth'
 import 'src/css/Home.css'
@@ -30,16 +30,7 @@ const SignedOutContent = () => {
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
   const { databaseService } = useContext(ServiceContext)
-  const [designs, setDesigns] = useState<PartialDesignData[]>([])
-  useEffect(() => {
-    const subscription = databaseService.observeDesigns(user).subscribe({
-      next: (designs) => setDesigns(designs),
-      error: (error) => console.error(error),
-    })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [databaseService, user])
+  const designs: PartialDesignData[] = useObservable(databaseService.observeDesigns(user)) ?? []
   return (
     <div>
       <h1>Home</h1>
