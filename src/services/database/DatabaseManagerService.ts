@@ -1,4 +1,5 @@
 import { User } from 'firebase/auth'
+import { Timestamp } from 'firebase/firestore'
 import { Observable } from 'rxjs'
 
 export abstract class DatabaseManagerService {
@@ -31,6 +32,11 @@ export interface DesignDataMetadata {
   id: string
   name: string
   createdAt: Date
+}
+
+export interface FirestoreDesignData {
+  name: string
+  createdAt: Timestamp
 }
 
 export type DesignData = DesignDataMetadata & { objects: DesignObject[] }

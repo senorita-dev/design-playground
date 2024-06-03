@@ -15,6 +15,7 @@ import {
   DesignObject,
   DesignObjectProps,
   DesignDataMetadata,
+  FirestoreDesignData,
 } from './DatabaseManagerService'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { User } from 'firebase/auth'
@@ -59,9 +60,12 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
       query(designsCollectionReference, orderBy('createdAt', 'desc')),
       (snapshot) => {
         const docs = snapshot.docs
-        const designs: DesignDataMetadata[] = docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() } as DesignDataMetadata),
-        )
+        const designs: DesignDataMetadata[] = docs.map((doc) => {
+          const firestoreDesignData: FirestoreDesignData = doc.data() as FirestoreDesignData
+          const { name, createdAt } = firestoreDesignData
+          const designData: DesignDataMetadata = { id: doc.id, name, createdAt: createdAt.toDate() }
+          return designData
+        })
         this.designsSubject.next(designs)
       },
       (error) => {
@@ -84,7 +88,9 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
         this.designSubject.next(null)
         return
       }
-      const designData: DesignDataMetadata = { id: doc.id, ...doc.data() } as DesignDataMetadata
+      const firestoreDesignData: FirestoreDesignData = doc.data() as FirestoreDesignData
+      const { name, createdAt } = firestoreDesignData
+      const designData: DesignDataMetadata = { id: doc.id, name, createdAt: createdAt.toDate() }
       this.designSubject.next(designData)
     })
   }

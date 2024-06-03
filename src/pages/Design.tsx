@@ -1,8 +1,9 @@
 import { User } from 'firebase/auth'
 import { useContext, useEffect } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
+import LeftBanner from 'src/components/LeftBanner'
 import RightBanner from 'src/components/RightBanner'
 import { ServiceContext } from 'src/services/context'
 import { useObservable } from 'src/utils/hooks'
@@ -11,17 +12,10 @@ import styled from 'styled-components'
 function Design() {
   const { userService } = useContext(ServiceContext)
   const user = useObservable(userService.observeUser())
-  if (user === null || user === undefined) {
-    return <Container>Loading...</Container>
-  }
-  if (user === null) {
-    return <SignedOutContent />
+  if (user === undefined || user === null) {
+    return <p>Loading...</p>
   }
   return <SignedInContent user={user} />
-}
-
-const SignedOutContent = () => {
-  return <Navigate to="/" />
 }
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
@@ -33,13 +27,14 @@ const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
       return
     }
     databaseService.setCurrentDesign(user, designId)
-  }, [designId])
+  }, [databaseService, user, designId])
   if (designId === undefined || design === null || design === undefined) {
     return <p>Not found</p>
   }
   return (
     <Container>
       <GridBackground />
+      <LeftBanner design={design}/>
       <Grid user={user} designId={designId} />
       <RightBanner />
     </Container>
