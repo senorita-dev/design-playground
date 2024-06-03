@@ -23,6 +23,8 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
   private firestore: Firestore
   private designsSubscription?: Unsubscribe
   private designsSubject: BehaviorSubject<DesignDataMetadata[]>
+  private designSubscription?: Unsubscribe
+  private designSubject: BehaviorSubject<DesignDataMetadata | null>
   private designObjectsSubscription?: Unsubscribe
   private designObjectsSubject: BehaviorSubject<DesignObject[]>
   private selectedDesignObjectSubject: BehaviorSubject<DesignObject | null>
@@ -31,12 +33,14 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     super()
     this.firestore = firestore
     this.designsSubject = new BehaviorSubject<DesignDataMetadata[]>([])
+    this.designSubject = new BehaviorSubject<DesignDataMetadata | null>(null)
     this.designObjectsSubject = new BehaviorSubject<DesignObject[]>([])
     this.selectedDesignObjectSubject = new BehaviorSubject<DesignObject | null>(null)
   }
 
   public dispose(): void {
     this.designsSubscription?.()
+    this.designSubscription?.()
     this.designObjectsSubscription?.()
   }
 
@@ -44,6 +48,23 @@ export class FirebaseDatabaseManagerService extends DatabaseManagerService {
     const designsCollectionReference = this.getDesignsCollectionReference(user)
     const designDataProps: Omit<DesignDataMetadata, 'id'> = { name, createdAt: new Date() }
     await addDoc(designsCollectionReference, designDataProps)
+  }
+
+  public setCurrentDesign(user: User, designId: string): void {
+    this.designSubscription?.()
+    const designDocReference = this.getDesignDocReference(user, designId)
+    this.designSubscription = onSnapshot(designDocReference, (doc) => {
+      if (doc.exists() === false) {
+        this.designSubject.next(null)
+        return
+      }
+      const designData: DesignDataMetadata = { id: doc.id, ...doc.data() } as DesignDataMetadata
+      this.designSubject.next(designData)
+    })
+  }
+
+  public observeCurrentDesign(): Observable<DesignDataMetadata | null> {
+    return this.designSubject
   }
 
   public observeDesigns(user: User): Observable<DesignDataMetadata[]> {

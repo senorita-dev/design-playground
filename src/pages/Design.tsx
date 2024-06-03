@@ -1,11 +1,10 @@
 import { User } from 'firebase/auth'
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Grid from 'src/components/Grid'
 import GridBackground from 'src/components/GridBackground'
 import RightBanner from 'src/components/RightBanner'
 import { ServiceContext } from 'src/services/context'
-import { DesignData } from 'src/services/database/DatabaseManagerService'
 import { useObservable } from 'src/utils/hooks'
 import styled from 'styled-components'
 
@@ -31,28 +30,16 @@ const SignedOutContent = () => {
 }
 
 const SignedInContent: React.FC<{ user: User }> = ({ user }) => {
-  const [design, setDesign] = useState<DesignData | null>(null)
   const { databaseService } = useContext(ServiceContext)
   const { designId } = useParams()
-  useEffect(() => {
-    if (designId) {
-      fetchDesign(user, designId)
-    }
-    async function fetchDesign(user: User, designId: string) {
-      const fetchedDesign = await databaseService.getDesign(user, designId)
-      setDesign(fetchedDesign)
-    }
-  }, [databaseService, designId, user])
+  const design = useObservable(databaseService.observeCurrentDesign())
   if (designId === undefined) {
-    return (
-      <Container>
-        <Link to={'/'}>{'<'}Back</Link>
-        <h1>Design</h1>
-        <p>No design selected</p>
-      </Container>
-    )
+    return
   }
-  console.log('design', design)
+  databaseService.setCurrentDesign(user, designId)
+  if (design === null || design === undefined) {
+    return <p>Not found</p>
+  }
   return (
     <Container>
       <GridBackground />
